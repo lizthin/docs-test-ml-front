@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> pages/Items/components/ShowItems/ShowItems.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">My React components</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Global</h3><ul><li><a href="global.html#App">App</a></li><li><a href="global.html#Breadcrumb">Breadcrumb</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Items">Items</a></li><li><a href="global.html#ItemsRouter">ItemsRouter</a></li><li><a href="global.html#ItemsServices">ItemsServices</a></li><li><a href="global.html#PROD">PROD</a></li><li><a href="global.html#ShowDetail">ShowDetail</a></li><li><a href="global.html#ShowItems">ShowItems</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>pages/Items/components/ShowItems/ShowItems.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import ItemsServices from "../../../../services/ItemService/ItemsService";
+import "./ShowItemsStyles.scss";
+import freeShipping from "../../../../assets/img/icons/ic_shipping@2x.png.png.png";
+import Breadcrumb from "../../../../components/Breadcrumb/Breadcrumb";
+
+/**
+ * funtion component Show Items, make list items input search response api
+ * @param {object} props history router props, data items initial state items  
+ * @returns list items, breadcrumb catefories
+ */
+const ShowItems = ({ history, dataItems }) => {
+
+  /**
+   * Hook useState items, search list items
+   * @example setItems({id:'ejemplo', title: 'ejemplo', price: {}},{id:'ejemplo', title: 'ejemplo', price: {}})
+   */
+  const [items, setItems] = useState(dataItems ?? []);
+
+  /**
+   * Hook useState categories, breadCrumb output
+   * @example setCategories(['bolsos', 'maquillaje'])
+   */
+  const [categories, setCategories] = useState([]);
+
+   /**
+   * Hook useEffect call service fetchAllItemsFiltered response array items
+   * activate with change location search
+   */
+  useEffect(() => {
+    if (history.location.search !== "") {
+      const query = history.location.search.split("=")[1];
+
+      ItemsServices.fetchAllItemsFiltered(query)
+        .then(({ items, categories }) => {
+          setItems(items.slice(0, 4));
+          setCategories(categories.slice(0, 5));
+        })
+        .catch((error) => console.warn);
+    }
+  }, [history.location.search]);
+
+  /**
+   * Funtion handleRedirectUrlDetail, change histori props pathname 
+   * activate ShowDetail component
+   * @param {string} id item details
+   * @example handleRedirectUrlDetail('MA12154') 
+   */
+  const handleRedirectUrlDetail = (id) => {
+    history.push({
+      pathname: `/items/${id.trim()}`,
+      data: {
+        categories: categories,
+      },
+    });
+  };
+
+  /**
+   * const shipping put class free shiping item
+   */
+  const shipping = (
+    &lt;div className="container-img-shipping">
+      &lt;img src={freeShipping} alt={freeShipping} className="img-shipping" />
+    &lt;/div>
+  );
+
+  return (
+    &lt;div className="container">
+      &lt;div className="row justify-content-around">
+        &lt;div className="col-10">
+          &lt;div className="row">
+            &lt;div className="col-12">
+              {categories.length > 0 ? (
+                categories.map((category, index) => (
+                  &lt;Breadcrumb
+                    key={category}
+                    properties={{
+                      category,
+                      lengthCatgories: categories.length,
+                      index,
+                      history,
+                    }}
+                  />
+                ))
+              ) : (
+                &lt;>
+                  &lt;div className="row mt-2 pt-2">&lt;/div>
+                &lt;/>
+              )}
+            &lt;/div>
+          &lt;/div>
+          {items.map((item) => (
+            &lt;div className="row justify-content-around" key={item.id}>
+              &lt;div
+                className="col-12 card-items"
+                onClick={() => {
+                  handleRedirectUrlDetail(item.id);
+                }}
+              >
+                &lt;div className="row">
+                  &lt;div className="col-12">
+                    &lt;div className="container-img-card-item">
+                      &lt;img
+                        className="img-card-item"
+                        src={item.picture}
+                        alt={item.picture}
+                      />
+                    &lt;/div>
+                    &lt;div className="currency-card-item">{item.city}&lt;/div>
+                    &lt;div className="container-detail-card-item">
+                    
+                      &lt;div className="price-card-items top-32-general">
+                        &lt;div className="left-item">
+                          ${" "}
+                          {new Intl.NumberFormat("de-DE").format(
+                            item.price.amount
+                          )}
+                        &lt;/div>
+                        {item.free_shipping ? shipping : &lt;>&lt;/>}
+                      &lt;/div>
+                      &lt;p className="title-card-items">{item.title}&lt;/p>
+                    &lt;/div>
+                  &lt;/div>
+                &lt;/div>
+                &lt;hr />
+              &lt;/div>
+            &lt;/div>
+          ))}
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  );
+};
+
+ShowItems.propTypes = {
+  history: PropTypes.object.isRequired,
+};
+
+export default ShowItems;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
